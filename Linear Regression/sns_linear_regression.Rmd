@@ -19,7 +19,6 @@ library(lubridate)
 library(ggplot2)
 library(readr)
 library(stringr)
-install.packages("viridis")
 library(viridis)
 ```
 
@@ -148,7 +147,7 @@ ggplot(cleaned_df, aes(x = USD_Production_Budget, y=Total_Revenue)) +
   xlab("Production Budget in $100 millions") +
   ylab("Revenue in $ billions")
 ```
-**Insight:** The scatter plot shows that most data points cluster in the bottom left corner. This suggests that the majority of films earn low revenues compared to their high production costs, indicating that most films either face losses or gain minimal profits.
+<br />**Insight:** The scatter plot shows that most data points cluster in the bottom left corner. This suggests that the majority of films earn low revenues compared to their high production costs, indicating that most films either face losses or gain minimal profits.
 
 ## Plotting Movie Revenue over Time
 ```{r}

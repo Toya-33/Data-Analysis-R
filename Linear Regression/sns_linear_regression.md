@@ -50,7 +50,12 @@ library(lubridate)
 library(ggplot2)
 library(readr)
 library(stringr)
+library(viridis)
 ```
+
+    ## Warning: package 'viridis' was built under R version 4.3.2
+
+    ## Loading required package: viridisLite
 
 # Read the Data
 
@@ -369,3 +374,43 @@ cat("The percentage that films were losing money is %", pct_losing_money)
     ## The percentage that films were losing money is % 28.10178
 
 # Data Viz: Bubble Charts
+
+``` r
+ggplot(cleaned_df, aes(x = USD_Production_Budget, y=Total_Revenue)) + 
+  geom_point(color = "blue") +
+  labs(title = "Revenue And Expense") +
+  xlab("Production Budget in $100 millions") +
+  ylab("Revenue in $ billions")
+```
+
+![](sns_linear_regression_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+<br />**Insight:** The scatter plot shows that most data points cluster
+in the bottom left corner. This suggests that the majority of films earn
+low revenues compared to their high production costs, indicating that
+most films either face losses or gain minimal profits.
+
+## Plotting Movie Revenue over Time
+
+``` r
+ggplot(cleaned_df, aes(x = Release_Date, y=Total_Revenue)) + 
+  geom_point(aes(color = Total_Revenue)) +
+  labs(title = "Movie Revenue Over Time") +
+  xlab("Release Date") +
+  ylab("Revenue in $ billions") +
+  scale_color_viridis(option = "D")
+```
+
+![](sns_linear_regression_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+**Insight**: The graph indicates an upward trend in the highest gross
+revenues for films over time. Additionally, it shows an increase in the
+number of film productions, as evidenced by the large cluster of dots in
+the bottom right corner.
+
+# Converting Years to Decades Trick
+
+Let’s broaden our view by examining the trends in film over the decades.
+
+``` r
+cleaned_df <- cleaned_df %>% mutate(Decades = as.integer(format(cleaned_df$Release_Date, "%Y")))
+cleaned_df$Decades <- (cleaned_df$Decades %/% 10)*10
+```
