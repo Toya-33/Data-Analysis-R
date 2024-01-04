@@ -1,0 +1,4 @@
+"0","# Date of Data Collection"
+"0","scrape_date <- as.Date('2018-5-1', format=""%Y-%m-%d"")"
+"0","not_released <- df %>% filter(Release_Date >= scrape_date)"
+"0","not_released"

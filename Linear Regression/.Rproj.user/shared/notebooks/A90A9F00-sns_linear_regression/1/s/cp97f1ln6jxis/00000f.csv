@@ -1,0 +1,4 @@
+"0","zero_domestic <- df %>% "
+"0","  filter(USD_Domestic_Gross == 0)"
+"0","zero_domestic <- zero_domestic[order(zero_domestic$USD_Production_Budget, decreasing = TRUE),]"
+"0","zero_domestic"
