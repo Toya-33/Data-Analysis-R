@@ -38,7 +38,7 @@ sum(duplicated(df))
 ```{r}
 glimpse(df)
 ```
-**Insight**: We noticed that there's no NA values or duplicates which is good, however we can see that aside from the column "Rank" seem to be incorrect. We need to change the "Release_Date" to datetime and "USD_Production_Budget", "USD_Worldwide_Gross", "USD_Domestic_Gross" to double data-type.
+**Insight**: We noticed that there's no NA values or duplicates which is good, however we need to change the "Release_Date" to datetime and "USD_Production_Budget", "USD_Worldwide_Gross", "USD_Domestic_Gross" to double data-type.
 
 ## Changing the data types
 ```{r}
@@ -121,7 +121,7 @@ scrape_date <- as.Date('2018-5-1', format="%Y-%m-%d")
 not_released <- df %>% filter(Release_Date >= scrape_date)
 not_released
 ```
-**Insight**: We find that the zero gross revenue data also contains movies not yet released at the time of data collection, so our next step is to exclude these rows from our dataframe.
+**Insight**: We find that the zero gross revenue data also contains movies not yet released at the time of data collection like "Singularity" and "Aquaman", so our next step is to exclude these rows from our dataframe.
 ```{r}
 cleaned_df <- df[df$Release_Date < scrape_date,]
 cleaned_df
@@ -158,7 +158,8 @@ ggplot(cleaned_df, aes(x = Release_Date, y=Total_Revenue)) +
   ylab("Revenue in $ billions") +
   scale_color_viridis(option = "D")
 ```
-**Insight**: The graph indicates an upward trend in the highest gross revenues for films over time. Additionally, it shows an increase in the number of film productions, as evidenced by the large cluster of dots in the bottom right corner.
+
+<br />**Insight**: The graph indicates an upward trend in the highest gross revenues for films over time. Additionally, it shows an increase in the number of film productions, as evidenced by the large cluster of dots in the bottom right corner.
 
 # Converting Years to Decades Trick
 Let's broaden our view by examining the trends in film over the decades.
@@ -166,4 +167,63 @@ Let's broaden our view by examining the trends in film over the decades.
 cleaned_df <- cleaned_df %>% mutate(Decades = as.integer(format(cleaned_df$Release_Date, "%Y")))
 cleaned_df$Decades <- (cleaned_df$Decades %/% 10)*10
 ```
+## Separate the "old" (before 1969) and "New" (1970s onwards) Films
 
+* `old_films` should include all the films before 1969 (up to and including 1969)
+* `new_films` should include all the films from 1970 onwards
+```{r}
+old_films <- cleaned_df %>% filter(Decades < 1970)
+new_films <- cleaned_df %>% filter(Decades >= 1970)
+```
+### Old films 
+```{r}
+summary(old_films)
+```
+### New Films
+```{r}
+summary(new_films)
+```
+**Insight**: Based on this quick data summary, we learnt that new films are able to earn drastically more money than the old films, despite the small different in production cost. The most expensive new film had a production cost of 425 million and earned a maximum of 3.54 billion, whereas the most expensive old film was 420 million with a revenue of only around 589 million, almost seven times less than what new films make. There are a couple reasons for this: 
+1. The are more people enjoying films
+2. Higher films ticket price
+3. Production company utilize more advance technology which reduce production cost.
+
+# Regression Plots
+## New Films
+```{r}
+ggplot(new_films, aes(x = USD_Production_Budget, y= Total_Revenue)) + 
+  geom_point(color = "darksalmon") +
+  geom_smooth(method=lm)+ 
+  labs(title = "Revenue VS Production Cost (New Films)") +
+  xlab("Production Cost in $100 million")+
+  ylab("Total Revenue in $billion")
+```
+
+**Linear Regression Formula:**
+$$ REV \hat ENUE = \theta _0 + \theta _1 BUDGET$$
+```{r}
+lm_revenue <- lm(data = new_films, formula = Total_Revenue ~ USD_Production_Budget)
+summary(lm_revenue)
+```
+**Insight:** In summary, our regression model features an intercept of -2.589e+06 or -2.589 million, a coefficient of 4.247, and an R-squared value of 0.5468. 
+
+It's important to note that when the film budget is zero, the estimated revenue is -2.589 million, which is impractical since how can we lost money without creating a film. One reason for this is that our model is very simple, we only predefined it as a straight line and find the best fit for our overall data, thus we need to be cautious on how we interpret our model. 
+
+The coefficient of 4.247 implies that a one-dollar increase in the budget corresponds to a 4.247 dollar increase in revenue. Lastly, the R-squared value of approximately 0.5468 suggests that our model can explain about 54.68% of the variance in revenue data, showcasing a reasonably accurate prediction considering how simple our model is with only one independent and dependent variable.
+
+## Old Films
+```{r}
+lm_revenue <- lm(data = old_films, formula = Total_Revenue ~ USD_Production_Budget)
+summary(lm_revenue)
+```
+**Insight**: Regarding old movies, our model's R-squared value is only 0.04262, which is quite low. This suggests that our simple model fails to predict the relationship between a one-unit increase in production budget and the change in gross revenue. Therefore, our model is ineffective for predicting the gross revenue of old films.
+
+```{r}
+ggplot(old_films, aes(x = USD_Production_Budget, y= Total_Revenue)) + 
+  geom_point(color = "darksalmon") +
+  geom_smooth(method=lm)+ 
+  labs(title = "Revenue VS Production Cost (Old Films)") +
+  xlab("Production Cost in $100 million")+
+  ylab("Total Revenue in $billion")
+```
+<br />**Insight**: Here is a visualization of our model for old films. There are hardly any dots on our regression line.

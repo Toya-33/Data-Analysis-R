@@ -1,2 +1,0 @@
-"0","international_releases <- df %>% filter(USD_Domestic_Gross == 0 & USD_Worldwide_Gross != 0)"
-"0","international_releases"

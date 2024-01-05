@@ -1,3 +1,0 @@
-"0","zero_international <- df %>% filter(USD_Worldwide_Gross == 0)"
-"0","zero_international <- zero_international[order(zero_international$USD_Production_Budget, decreasing = TRUE),]"
-"0","zero_international"

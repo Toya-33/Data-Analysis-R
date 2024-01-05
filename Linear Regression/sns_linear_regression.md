@@ -117,8 +117,7 @@ glimpse(df)
     ## $ USD_Domestic_Gross    <chr> "$10,000,000", "$0", "$8,000,000", "$3,000,000",…
 
 **Insight**: We noticed that there’s no NA values or duplicates which is
-good, however we can see that aside from the column “Rank” seem to be
-incorrect. We need to change the “Release_Date” to datetime and
+good, however we need to change the “Release_Date” to datetime and
 “USD_Production_Budget”, “USD_Worldwide_Gross”, “USD_Domestic_Gross” to
 double data-type.
 
@@ -331,8 +330,9 @@ not_released
     ## # ℹ 1 more variable: USD_Domestic_Gross <dbl>
 
 **Insight**: We find that the zero gross revenue data also contains
-movies not yet released at the time of data collection, so our next step
-is to exclude these rows from our dataframe.
+movies not yet released at the time of data collection like
+“Singularity” and “Aquaman”, so our next step is to exclude these rows
+from our dataframe.
 
 ``` r
 cleaned_df <- df[df$Release_Date < scrape_date,]
@@ -401,10 +401,11 @@ ggplot(cleaned_df, aes(x = Release_Date, y=Total_Revenue)) +
 ```
 
 ![](sns_linear_regression_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-**Insight**: The graph indicates an upward trend in the highest gross
-revenues for films over time. Additionally, it shows an increase in the
-number of film productions, as evidenced by the large cluster of dots in
-the bottom right corner.
+
+<br />**Insight**: The graph indicates an upward trend in the highest
+gross revenues for films over time. Additionally, it shows an increase
+in the number of film productions, as evidenced by the large cluster of
+dots in the bottom right corner.
 
 # Converting Years to Decades Trick
 
@@ -414,3 +415,175 @@ Let’s broaden our view by examining the trends in film over the decades.
 cleaned_df <- cleaned_df %>% mutate(Decades = as.integer(format(cleaned_df$Release_Date, "%Y")))
 cleaned_df$Decades <- (cleaned_df$Decades %/% 10)*10
 ```
+
+## Separate the “old” (before 1969) and “New” (1970s onwards) Films
+
+- `old_films` should include all the films before 1969 (up to and
+  including 1969)
+- `new_films` should include all the films from 1970 onwards
+
+``` r
+old_films <- cleaned_df %>% filter(Decades < 1970)
+new_films <- cleaned_df %>% filter(Decades >= 1970)
+```
+
+### Old films
+
+``` r
+summary(old_films)
+```
+
+    ##       Rank       Release_Date        Movie_Title        USD_Production_Budget
+    ##  Min.   :1253   Min.   :1915-08-02   Length:153         Min.   :  100000     
+    ##  1st Qu.:3973   1st Qu.:1946-01-01   Class :character   1st Qu.: 1250000     
+    ##  Median :4434   Median :1956-12-23   Mode  :character   Median : 2900000     
+    ##  Mean   :4275   Mean   :1954-06-10                      Mean   : 4611298     
+    ##  3rd Qu.:4785   3rd Qu.:1964-10-22                      3rd Qu.: 5000000     
+    ##  Max.   :5299   Max.   :1969-12-19                      Max.   :42000000     
+    ##  USD_Worldwide_Gross USD_Domestic_Gross  Total_Revenue          Decades    
+    ##  Min.   :        0   Min.   :        0   Min.   :        0   Min.   :1910  
+    ##  1st Qu.:  5273000   1st Qu.:  5000000   1st Qu.: 10000000   1st Qu.:1940  
+    ##  Median : 10000000   Median : 10000000   Median : 20000000   Median :1950  
+    ##  Mean   : 30419634   Mean   : 22389474   Mean   : 52809108   Mean   :1949  
+    ##  3rd Qu.: 33208099   3rd Qu.: 28350000   3rd Qu.: 64489436   3rd Qu.:1960  
+    ##  Max.   :390525192   Max.   :198680470   Max.   :589205662   Max.   :1960
+
+### New Films
+
+``` r
+summary(new_films)
+```
+
+    ##       Rank       Release_Date        Movie_Title        USD_Production_Budget
+    ##  Min.   :   1   Min.   :1970-01-01   Length:5231        Min.   :     1100    
+    ##  1st Qu.:1314   1st Qu.:2000-07-14   Class :character   1st Qu.:  5000000    
+    ##  Median :2629   Median :2006-10-03   Mode  :character   Median : 18000000    
+    ##  Mean   :2652   Mean   :2005-02-19                      Mean   : 31811438    
+    ##  3rd Qu.:3968   3rd Qu.:2012-01-06                      3rd Qu.: 40000000    
+    ##  Max.   :5391   Max.   :2017-12-31                      Max.   :425000000    
+    ##  USD_Worldwide_Gross USD_Domestic_Gross  Total_Revenue          Decades    
+    ##  Min.   :0.000e+00   Min.   :        0   Min.   :0.000e+00   Min.   :1970  
+    ##  1st Qu.:3.832e+06   1st Qu.:  1252581   1st Qu.:6.109e+06   1st Qu.:2000  
+    ##  Median :2.854e+07   Median : 17510118   Median :4.707e+07   Median :2000  
+    ##  Mean   :9.068e+07   Mean   : 41841922   Mean   :1.325e+08   Mean   :2000  
+    ##  3rd Qu.:9.878e+07   3rd Qu.: 53301583   3rd Qu.:1.536e+08   3rd Qu.:2010  
+    ##  Max.   :2.784e+09   Max.   :936662225   Max.   :3.544e+09   Max.   :2010
+
+**Insight**: Based on this quick data summary, we learnt that new films
+are able to earn drastically more money than the old films, despite the
+small different in production cost. The most expensive new film had a
+production cost of 425 million and earned a maximum of 3.54 billion,
+whereas the most expensive old film was 420 million with a revenue of
+only around 589 million, almost seven times less than what new films
+make. There are a couple reasons for this: 1. The are more people
+enjoying films 2. Higher films ticket price 3. Production company
+utilize more advance technology which reduce production cost.
+
+# Regression Plots
+
+## New Films
+
+``` r
+ggplot(new_films, aes(x = USD_Production_Budget, y= Total_Revenue)) + 
+  geom_point(color = "darksalmon") +
+  geom_smooth(method=lm)+ 
+  labs(title = "Revenue VS Production Cost (New Films)") +
+  xlab("Production Cost in $100 million")+
+  ylab("Total Revenue in $billion")
+```
+
+    ## `geom_smooth()` using formula = 'y ~ x'
+
+![](sns_linear_regression_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+**Linear Regression Formula:**
+$$ REV \hat ENUE = \theta _0 + \theta _1 BUDGET$$
+
+``` r
+lm_revenue <- lm(data = new_films, formula = Total_Revenue ~ USD_Production_Budget)
+summary(lm_revenue)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Total_Revenue ~ USD_Production_Budget, data = new_films)
+    ## 
+    ## Residuals:
+    ##        Min         1Q     Median         3Q        Max 
+    ## -816126371  -54866328   -7454735   19454750 2019408076 
+    ## 
+    ## Coefficients:
+    ##                         Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)           -2.589e+06  2.764e+06  -0.936    0.349    
+    ## USD_Production_Budget  4.247e+00  5.347e-02  79.434   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 157600000 on 5229 degrees of freedom
+    ## Multiple R-squared:  0.5468, Adjusted R-squared:  0.5467 
+    ## F-statistic:  6310 on 1 and 5229 DF,  p-value: < 2.2e-16
+
+**Insight:** In summary, our regression model features an intercept of
+-2.589e+06 or -2.589 million, a coefficient of 4.247, and an R-squared
+value of 0.5468.
+
+It’s important to note that when the film budget is zero, the estimated
+revenue is -2.589 million, which is impractical since how can we lost
+money without creating a film. One reason for this is that our model is
+very simple, we only predefined it as a straight line and find the best
+fit for our overall data, thus we need to be cautious on how we
+interpret our model.
+
+The coefficient of 4.247 implies that a one-dollar increase in the
+budget corresponds to a 4.247 dollar increase in revenue. Lastly, the
+R-squared value of approximately 0.5468 suggests that our model can
+explain about 54.68% of the variance in revenue data, showcasing a
+reasonably accurate prediction considering how simple our model is with
+only one independent and dependent variable.
+
+## Old Films
+
+``` r
+lm_revenue <- lm(data = old_films, formula = Total_Revenue ~ USD_Production_Budget)
+summary(lm_revenue)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Total_Revenue ~ USD_Production_Budget, data = old_films)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -87773016 -36739687 -26973382   4189797 538594603 
+    ## 
+    ## Coefficients:
+    ##                        Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)           3.856e+07  8.734e+06   4.415 1.92e-05 ***
+    ## USD_Production_Budget 3.090e+00  1.192e+00   2.593   0.0105 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 83960000 on 151 degrees of freedom
+    ## Multiple R-squared:  0.04262,    Adjusted R-squared:  0.03628 
+    ## F-statistic: 6.722 on 1 and 151 DF,  p-value: 0.01046
+
+**Insight**: Regarding old movies, our model’s R-squared value is only
+0.04262, which is quite low. This suggests that our simple model fails
+to predict the relationship between a one-unit increase in production
+budget and the change in gross revenue. Therefore, our model is
+ineffective for predicting the gross revenue of old films.
+
+``` r
+ggplot(old_films, aes(x = USD_Production_Budget, y= Total_Revenue)) + 
+  geom_point(color = "darksalmon") +
+  geom_smooth(method=lm)+ 
+  labs(title = "Revenue VS Production Cost (Old Films)") +
+  xlab("Production Cost in $100 million")+
+  ylab("Total Revenue in $billion")
+```
+
+    ## `geom_smooth()` using formula = 'y ~ x'
+
+![](sns_linear_regression_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+<br />**Insight**: Here is a visualization of our model for old films.
+There are hardly any dots on our regression line.
