@@ -481,7 +481,8 @@ utilize more advance technology which reduce production cost.
 
 # Regression Plots
 
-## New Films
+**Linear Regression Formula:**
+$$ REV \hat ENUE = \theta _0 + \theta _1 BUDGET$$ \## New Films
 
 ``` r
 ggplot(new_films, aes(x = USD_Production_Budget, y= Total_Revenue)) + 
@@ -495,9 +496,6 @@ ggplot(new_films, aes(x = USD_Production_Budget, y= Total_Revenue)) +
     ## `geom_smooth()` using formula = 'y ~ x'
 
 ![](sns_linear_regression_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
-
-**Linear Regression Formula:**
-$$ REV \hat ENUE = \theta _0 + \theta _1 BUDGET$$
 
 ``` r
 lm_revenue <- lm(data = new_films, formula = Total_Revenue ~ USD_Production_Budget)
