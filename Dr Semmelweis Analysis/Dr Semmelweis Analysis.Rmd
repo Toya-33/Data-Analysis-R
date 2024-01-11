@@ -208,4 +208,52 @@ ggplot(combined_data, aes(x= date, y = pct_deaths)) +
        color = "Legend")+
   theme(aspect.ratio = 1/2)
 ```
+## Use Box Plots to Show How the Death Rate Changed Before and After Handwashing
+
+How did key statistics like the mean, max, min, 1st and 3rd quartile changed as a result of the new policy?
+
+```{r}
+ggplot(combined_data, aes(x = period, y = pct_deaths, color = period)) +
+  geom_boxplot() + 
+  labs(title = "Death Percentage Before and After Handwashing",
+       x = "Period",
+       y = "Death percentage",
+       color = "Legend") + 
+  scale_color_manual(values = c(
+    "After handwashing" = "blue",
+    "Before handwashing" = "red"
+  ))
+
+```
+**Insight:** This boxplot offers a distinct perspective on how handwashing influences the death rate of women in the 1840s. Upon comparing the two boxplots, it becomes evident that the first one depicts a substantial spike in the death rate, exceeding 30%, occurring in 1842. This boxplot features a large body and long whiskers, indicating significant fluctuations in the death rate of women in the absence of handwashing. In contrast, after the introduction of handwashing, the second boxplot is noticeably smaller with shorter whiskers. This boxplot suggests that with the implementation of handwashing, the averages, maximums, and minimums decrease significantly, resulting in greater overall stability.
+## Use Histograms to Visualise the Monthly Distribution of Outcomes
+```{r}
+ggplot(combined_data, aes(x = pct_deaths, fill = period, color = period)) + 
+  geom_histogram(
+    bins = 30,
+    alpha = 0.5,
+    position="identity"
+  )
+```
+**Insight:** Due to the limitation of our data, our histogram look a bit jagged. However, we can estimate what the distribution would look like with a Kernel Density Estimate (KDE).
+## Use a Kernel Density Estimate (KDE) to visualise a smooth distribution
+```{r}
+ggplot(combined_data, aes(x=pct_deaths, fill=period, color=period)) + 
+  geom_density(alpha=0.4) + 
+  scale_color_manual(values = c(
+    "After handwashing" = "blue",
+    "Before handwashing" = "red"
+  )) +
+  scale_fill_manual(values = c(
+    "After handwashing" = "blue",
+    "Before handwashing" = "red"
+  ))
+```
+**Insight:** Now, it's easier and clearer to confirm that for handwashing, the distribution of the death rate is more skewed to the right compared to the flatter distribution observed in the absence of handwashing. This further reinforces our argument in favor of handwashing.
+# Use a T-Test to Show Statistical Significance
+Lastly, we want to statistical confirm that the 8.4% decrease in the overall mortality rate isn't just happen purely by chance but actually statistically significant (meaning that the difference was had by the introduction of handwashing).
+```{r}
+t.test(before_handwashing$pct_deaths, after_handwashing$pct_deaths)
+```
+**Insight:** With a p-value of 1.532e-15 which is an extremely small value. Thus, we can confidently state that we are 99% certain that the difference brought about by introducing handwashing is not merely a random occurrence but is statistically significant.
 
