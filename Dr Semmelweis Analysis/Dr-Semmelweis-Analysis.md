@@ -367,7 +367,7 @@ yearly_df %>%
     ## 1 clinic 1          0.1 
     ## 2 clinic 2          0.04
 
-**Insight**: Now we can confidently say that, clinic 2 are safer
+<br/>**Insight**: Now we can confidently say that, clinic 2 are safer
 considering the low average death rate of only 4% compare to clinic 1
 10%.
 
@@ -378,14 +378,14 @@ ggplot(yearly_df, aes(x=year, y = death_rate, color = clinic)) +
 ```
 
 ![](Dr-Semmelweis-Analysis_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-**Insight:** It is evident that in 1842, the death rate was at its peak,
-with Clinic 1 recording a total death rate of over 15% and Clinic 2 at
-7.5%. Further research on the internet suggests that during the 1840s,
-doctors and medical students were not as hygienic during autopsies,
-allowing diseases from the remains and particles of the corpse to
-transfer to women giving birth. This breakthrough allow Semmelweis to
-realised that the majority of the deaths in both clinics were not only
-cause by women giving birth but also transmitted disease.
+<br/>**Insight:** It is evident that in 1842, the death rate was at its
+peak, with Clinic 1 recording a total death rate of over 15% and Clinic
+2 at 7.5%. Further research on the internet suggests that during the
+1840s, doctors and medical students were not as hygienic during
+autopsies, allowing diseases from the remains and particles of the
+corpse to transfer to women giving birth. This breakthrough allow
+Semmelweis to realised that the majority of the deaths in both clinics
+were not only cause by women giving birth but also transmitted disease.
 
 # Major Breakthrough
 
@@ -447,8 +447,8 @@ sprintf("After the handwashing madatory the death rate was %.2f percentage.", af
 
     ## [1] "After the handwashing madatory the death rate was 2.15 percentage."
 
-**Insight**: Wow, the hand washing mandatory worked. The mortality rate
-dropped by roughly a factor of 5 from 10.53% to 2.15%.
+<br/>**Insight**: Wow, the hand washing mandatory worked. The mortality
+rate dropped by roughly a factor of 5 from 10.53% to 2.15%.
 
 # Calculate a Rolling Average of the Death Rate
 
@@ -485,8 +485,8 @@ ggplot(combined_data, aes(x= date, y = pct_deaths)) +
     ## Warning: Removed 5 rows containing missing values (`geom_line()`).
 
 ![](Dr-Semmelweis-Analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
-\## Use Box Plots to Show How the Death Rate Changed Before and After
-Handwashing
+<br/> \## Use Box Plots to Show How the Death Rate Changed Before and
+After Handwashing
 
 How did key statistics like the mean, max, min, 1st and 3rd quartile
 changed as a result of the new policy?
@@ -505,7 +505,7 @@ ggplot(combined_data, aes(x = period, y = pct_deaths, color = period)) +
 ```
 
 ![](Dr-Semmelweis-Analysis_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
-**Insight:** This boxplot offers a distinct perspective on how
+<br/>**Insight:** This boxplot offers a distinct perspective on how
 handwashing influences the death rate of women in the 1840s. Upon
 comparing the two boxplots, it becomes evident that the first one
 depicts a substantial spike in the death rate, exceeding 30%, occurring
@@ -528,10 +528,10 @@ ggplot(combined_data, aes(x = pct_deaths, fill = period, color = period)) +
 ```
 
 ![](Dr-Semmelweis-Analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
-**Insight:** Due to the limitation of our data, our histogram look a bit
-jagged. However, we can estimate what the distribution would look like
-with a Kernel Density Estimate (KDE). \## Use a Kernel Density Estimate
-(KDE) to visualise a smooth distribution
+<br/>**Insight:** Due to the limitation of our data, our histogram look
+a bit jagged. However, we can estimate what the distribution would look
+like with a Kernel Density Estimate (KDE). \## Use a Kernel Density
+Estimate (KDE) to visualise a smooth distribution
 
 ``` r
 ggplot(combined_data, aes(x=pct_deaths, fill=period, color=period)) + 
@@ -547,7 +547,7 @@ ggplot(combined_data, aes(x=pct_deaths, fill=period, color=period)) +
 ```
 
 ![](Dr-Semmelweis-Analysis_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
-**Insight:** Now, it’s easier and clearer to confirm that for
+<br/>**Insight:** Now, it’s easier and clearer to confirm that for
 handwashing, the distribution of the death rate is more skewed to the
 right compared to the flatter distribution observed in the absence of
 handwashing. This further reinforces our argument in favor of
